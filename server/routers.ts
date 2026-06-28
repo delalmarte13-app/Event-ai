@@ -495,9 +495,8 @@ export const appRouter = router({
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
-      const COOKIE_NAME = "session";
       const cookieOptions = { maxAge: -1, secure: true, sameSite: "none" as const, httpOnly: true, path: "/" };
-      ctx.res.clearCookie(COOKIE_NAME, cookieOptions);
+      ctx.res.clearCookie("app_session_id", cookieOptions);
       return { success: true } as const;
     }),
   }),

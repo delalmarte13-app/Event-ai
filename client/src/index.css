@@ -1,7 +1,7 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -49,134 +49,126 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
-  --radius: 0.75rem;
-  /* Dark elegant theme — deep charcoal + gold accents */
-  --background: oklch(0.10 0.005 260);
-  --foreground: oklch(0.96 0.005 60);
-  --card: oklch(0.14 0.008 260);
-  --card-foreground: oklch(0.96 0.005 60);
-  --popover: oklch(0.14 0.008 260);
-  --popover-foreground: oklch(0.96 0.005 60);
-  /* Gold primary */
-  --primary: oklch(0.78 0.12 75);
-  --primary-foreground: oklch(0.10 0.005 260);
-  --secondary: oklch(0.18 0.01 260);
-  --secondary-foreground: oklch(0.90 0.005 60);
-  --muted: oklch(0.18 0.01 260);
-  --muted-foreground: oklch(0.60 0.01 260);
-  --accent: oklch(0.22 0.015 260);
-  --accent-foreground: oklch(0.96 0.005 60);
-  --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(0.96 0.005 60);
-  --border: oklch(0.22 0.01 260);
-  --input: oklch(0.18 0.01 260);
-  --ring: oklch(0.78 0.12 75);
-  --chart-1: oklch(0.78 0.12 75);
-  --chart-2: oklch(0.65 0.15 200);
-  --chart-3: oklch(0.70 0.12 300);
-  --chart-4: oklch(0.72 0.14 160);
-  --chart-5: oklch(0.68 0.16 30);
-  --sidebar: oklch(0.12 0.008 260);
-  --sidebar-foreground: oklch(0.90 0.005 60);
-  --sidebar-primary: oklch(0.78 0.12 75);
-  --sidebar-primary-foreground: oklch(0.10 0.005 260);
-  --sidebar-accent: oklch(0.18 0.01 260);
-  --sidebar-accent-foreground: oklch(0.90 0.005 60);
-  --sidebar-border: oklch(0.20 0.01 260);
-  --sidebar-ring: oklch(0.78 0.12 75);
-}
-
-/* Single theme — always dark elegant */
-
 @layer base {
+  :root {
+    --radius: 0.75rem;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 45 93% 47%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 45 93% 47%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 15%;
+    --input: 0 0% 10%;
+    --ring: 45 93% 47%;
+    --chart-1: 45 93% 47%;
+    --chart-2: 0 84% 60%;
+    --chart-3: 217 91% 60%;
+    --chart-4: 280 85% 67%;
+    --chart-5: 12 76% 61%;
+    --sidebar: 0 0% 5%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 45 93% 47%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 45 93% 47%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 45 93% 47%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 45 93% 47%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 45 93% 47%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 15%;
+    --input: 0 0% 10%;
+    --ring: 45 93% 47%;
+    --chart-1: 45 93% 47%;
+    --chart-2: 0 84% 60%;
+    --chart-3: 217 91% 60%;
+    --chart-4: 280 85% 67%;
+    --chart-5: 12 76% 61%;
+    --sidebar: 0 0% 5%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 45 93% 47%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 45 93% 47%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 45 93% 47%;
+  }
+
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-  }
-  h1, h2, h3 {
-    font-family: 'Playfair Display', serif;
-  }
-  button:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]),
-  [type="button"]:not(:disabled),
-  [type="submit"]:not(:disabled),
-  [type="reset"]:not(:disabled),
-  a[href],
-  select:not(:disabled),
-  input[type="checkbox"]:not(:disabled),
-  input[type="radio"]:not(:disabled) {
-    @apply cursor-pointer;
+    @apply bg-background text-foreground;
   }
 }
 
-/* Gold gradient text */
-.text-gold-gradient {
-  background: linear-gradient(135deg, oklch(0.78 0.12 75), oklch(0.88 0.10 85), oklch(0.72 0.14 65));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+@tailwind components;
+@tailwind utilities;
 
-/* Glass card effect */
-.glass-card {
-  background: oklch(0.14 0.008 260 / 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid oklch(0.78 0.12 75 / 0.15);
-}
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 
-/* Gold border glow */
-.gold-glow {
-  box-shadow: 0 0 20px oklch(0.78 0.12 75 / 0.2), 0 0 40px oklch(0.78 0.12 75 / 0.1);
-}
+  .text-gold-gradient {
+    background: linear-gradient(to right, rgb(252, 211, 77), rgb(251, 191, 36), rgb(251, 146, 60));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: oklch(0.12 0.008 260); }
-::-webkit-scrollbar-thumb { background: oklch(0.28 0.01 260); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: oklch(0.78 0.12 75 / 0.6); }
-
-@layer components {
-  /**
-   * Custom container utility that centers content and adds responsive padding.
-   *
-   * This overrides Tailwind's default container behavior to:
-   * - Auto-center content (mx-auto)
-   * - Add responsive horizontal padding
-   * - Set max-width for large screens
-   *
-   * Usage: <div className="container">...</div>
-   *
-   * For custom widths, use max-w-* utilities directly:
-   * <div className="max-w-6xl mx-auto px-4">...</div>
-   */
   .container {
-    width: 100%;
+    max-width: 80rem;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem; /* 16px - mobile padding */
+    padding-left: 1rem;
     padding-right: 1rem;
-  }
-
-  .flex {
-    min-height: 0;
-    min-width: 0;
   }
 
   @media (min-width: 640px) {
     .container {
-      padding-left: 1.5rem; /* 24px - tablet padding */
+      padding-left: 1.5rem;
       padding-right: 1.5rem;
     }
   }
 
   @media (min-width: 1024px) {
     .container {
-      padding-left: 2rem; /* 32px - desktop padding */
+      padding-left: 2rem;
       padding-right: 2rem;
-      max-width: 1280px; /* Standard content width */
     }
+  }
+
+  .flex {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
   }
 }
