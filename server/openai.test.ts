@@ -53,6 +53,6 @@ describe("OpenAI API Integration", () => {
         throw new Error(`Video narrative generation failed: ${errorMsg}`);
       }
     },
-    15000
+    30000
   );
 });

@@ -50,7 +50,25 @@ export default function Events() {
   const { data: publicEvents, isLoading: publicLoading } = trpc.events.listPublic.useQuery();
 
   const allEvents = isAuthenticated
-    ? [...(myEvents ?? []), ...(publicEvents ?? [])]
+    ? (() => {
+        const seen = new Set<number>();
+        const combined = [];
+        // Agregar eventos propios primero
+        for (const event of myEvents ?? []) {
+          if (!seen.has(event.id)) {
+            combined.push(event);
+            seen.add(event.id);
+          }
+        }
+        // Agregar eventos públicos que no estén duplicados
+        for (const event of publicEvents ?? []) {
+          if (!seen.has(event.id)) {
+            combined.push(event);
+            seen.add(event.id);
+          }
+        }
+        return combined;
+      })()
     : publicEvents ?? [];
 
   const filtered = allEvents.filter((e: any) =>
