@@ -8,13 +8,13 @@ import {
   varchar,
 } from "drizzle-orm/mysql-core";
 
-// ─── Users ────────────────────────────────────────────────────────────────────
+// ─── Users ───────────────────────────────────────────────────────────
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  openId: varchar("openId", { length: 64 }).unique(), // NULL for guest users
   name: text("name"),
   email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
+  loginMethod: varchar("loginMethod", { length: 64 }), // 'oauth' or 'guest'
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   bio: text("bio"),
   avatarUrl: text("avatarUrl"),
@@ -29,7 +29,19 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// ─── Events ───────────────────────────────────────────────────────────────────
+// ─── Guest Sessions ──────────────────────────────────────────────────
+export const guestSessions = mysqlTable("guest_sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(), // References guest user
+  eventId: int("eventId").notNull(),
+  token: varchar("token", { length: 256 }).notNull().unique(), // Signed session token
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type GuestSession = typeof guestSessions.$inferSelect;
+
+// ─── Events ──────────────────────────────────────────────────────────
 export const events = mysqlTable("events", {
   id: int("id").autoincrement().primaryKey(),
   organizerId: int("organizerId").notNull(),
@@ -54,7 +66,7 @@ export const events = mysqlTable("events", {
 export type Event = typeof events.$inferSelect;
 export type InsertEvent = typeof events.$inferInsert;
 
-// ─── Event Participants ───────────────────────────────────────────────────────
+// ─── Event Participants ──────────────────────────────────────────────
 export const eventParticipants = mysqlTable("event_participants", {
   id: int("id").autoincrement().primaryKey(),
   eventId: int("eventId").notNull(),
@@ -65,7 +77,7 @@ export const eventParticipants = mysqlTable("event_participants", {
 
 export type EventParticipant = typeof eventParticipants.$inferSelect;
 
-// ─── Media ────────────────────────────────────────────────────────────────────
+// ─── Media ───────────────────────────────────────────────────────────
 export const media = mysqlTable("media", {
   id: int("id").autoincrement().primaryKey(),
   eventId: int("eventId").notNull(),
@@ -83,7 +95,7 @@ export const media = mysqlTable("media", {
 export type Media = typeof media.$inferSelect;
 export type InsertMedia = typeof media.$inferInsert;
 
-// ─── Chat Messages ────────────────────────────────────────────────────────────
+// ─── Chat Messages ───────────────────────────────────────────────────
 export const chatMessages = mysqlTable("chat_messages", {
   id: int("id").autoincrement().primaryKey(),
   eventId: int("eventId").notNull(),
@@ -96,7 +108,7 @@ export const chatMessages = mysqlTable("chat_messages", {
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = typeof chatMessages.$inferInsert;
 
-// ─── Albums ───────────────────────────────────────────────────────────────────
+// ─── Albums ──────────────────────────────────────────────────────────
 export const albums = mysqlTable("albums", {
   id: int("id").autoincrement().primaryKey(),
   eventId: int("eventId").notNull(),
@@ -113,18 +125,20 @@ export const albums = mysqlTable("albums", {
 export type Album = typeof albums.$inferSelect;
 export type InsertAlbum = typeof albums.$inferInsert;
 
-// ─── Album Items ──────────────────────────────────────────────────────────────
+// ─── Album Items ─────────────────────────────────────────────────────
+// Store permanent photo URL directly for storage efficiency (not media.id reference)
 export const albumItems = mysqlTable("album_items", {
   id: int("id").autoincrement().primaryKey(),
   albumId: int("albumId").notNull(),
-  mediaId: int("mediaId").notNull(),
+  photoUrl: text("photoUrl").notNull(), // Permanent photo URL
   order: int("order").default(0).notNull(),
   aiCaption: text("aiCaption"),
+  qualityScore: int("qualityScore"), // 0-100 quality score from vision model
 });
 
 export type AlbumItem = typeof albumItems.$inferSelect;
 
-// ─── Communities ──────────────────────────────────────────────────────────────
+// ─── Communities ─────────────────────────────────────────────────────
 export const communities = mysqlTable("communities", {
   id: int("id").autoincrement().primaryKey(),
   creatorId: int("creatorId").notNull(),
@@ -144,7 +158,7 @@ export const communities = mysqlTable("communities", {
 export type Community = typeof communities.$inferSelect;
 export type InsertCommunity = typeof communities.$inferInsert;
 
-// ─── Community Members ────────────────────────────────────────────────────────
+// ─── Community Members ────────────────────────────────────────────────
 export const communityMembers = mysqlTable("community_members", {
   id: int("id").autoincrement().primaryKey(),
   communityId: int("communityId").notNull(),
@@ -155,7 +169,7 @@ export const communityMembers = mysqlTable("community_members", {
 
 export type CommunityMember = typeof communityMembers.$inferSelect;
 
-// ─── Professionals ────────────────────────────────────────────────────────────
+// ─── Professionals ───────────────────────────────────────────────────
 export const professionals = mysqlTable("professionals", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().unique(),
