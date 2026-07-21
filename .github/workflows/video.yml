@@ -1,0 +1,66 @@
+name: Genera Video Evento con Runway
+
+on:
+  workflow_dispatch:
+    inputs:
+      event_id:
+        description: 'ID del evento (carpeta media/evento_X)'
+        required: true
+        type: string
+
+jobs:
+  video:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Descarga fotos del evento
+        run: |
+          mkdir -p media/${{ inputs.event_id }}
+          # TODO: Agrega aquí tu comando para descargar fotos (rclone, etc.)
+
+      - name: Genera video con Runway ML
+        env:
+          RUNWAY_API_KEY: ${{ secrets.RUNWAY_API_KEY }}
+        run: |
+          IMAGE_URL="https://raw.githubusercontent.com/delalmarte13-app/Event-ai/main/media/${{ inputs.event_id }}/cover.jpg"
+          
+          echo "Usando imagen: $IMAGE_URL"
+          
+          curl -X POST https://api.dev.runwayml.com/v1/image_to_video \
+            -H "Authorization: Bearer $RUNWAY_API_KEY" \
+            -H "X-Runway-Version: 2024-11-06" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "gen4.5",
+              "promptImage": "'"$IMAGE_URL"'",
+              "promptText": "Recap cinematográfico del evento: participantes felices, momentos emotivos, energía positiva, transiciones suaves, estilo documental vibrante",
+              "ratio": "1280:720",
+              "duration": 8
+            }' > runway_response.json
+
+          TASK_ID=$(jq -r '.id' runway_response.json || echo "")
+          echo "Task ID: $TASK_ID"
+
+          # Polling
+          for i in {1..40}; do
+            sleep 15
+            RESPONSE=$(curl -s -H "Authorization: Bearer $RUNWAY_API_KEY" -H "X-Runway-Version: 2024-11-06" \
+              "https://api.dev.runwayml.com/v1/tasks/$TASK_ID")
+            STATUS=$(echo "$RESPONSE" | jq -r '.status' || echo "UNKNOWN")
+            echo "Estado: $STATUS"
+            if [ "$STATUS" = "COMPLETED" ]; then
+              VIDEO_URL=$(echo "$RESPONSE" | jq -r '.output.video')
+              echo "Video listo: $VIDEO_URL"
+              curl -L -o output.mp4 "$VIDEO_URL"
+              break
+            elif [ "$STATUS" = "FAILED" ]; then
+              echo "Error en generación"
+              exit 1
+            fi
+          done
+
+      - name: Sube video a Drive y notifica
+        run: |
+          echo "✅ Video generado en output.mp4"
+          # Agrega aquí tu comando de subida (rclone u otro)
