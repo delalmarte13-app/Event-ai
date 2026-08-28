@@ -335,13 +335,9 @@ const albumsRouter = router({
           id: albumItems.id,
           order: albumItems.order,
           aiCaption: albumItems.aiCaption,
-          mediaId: albumItems.mediaId,
-          url: media.url,
-          mediaType: media.mediaType,
-          caption: media.caption,
+          url: albumItems.photoUrl,
         })
         .from(albumItems)
-        .leftJoin(media, eq(albumItems.mediaId, media.id))
         .where(eq(albumItems.albumId, input.albumId))
         .orderBy(albumItems.order);
 
@@ -402,7 +398,7 @@ const albumsRouter = router({
         const photo = selectedPhotos[i];
         await db.insert(albumItems).values({
           albumId,
-          mediaId: photo.id,
+          photoUrl: photo.url,
           order: i,
           aiCaption: photo.caption ?? null,
         });

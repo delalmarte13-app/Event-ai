@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { invokeLLM } from "./_core/llm";
 
-describe("OpenAI API Integration", () => {
+describe.skipIf(!process.env.BUILT_IN_FORGE_API_KEY)("OpenAI API Integration", () => {
   it("should validate OpenAI API key by calling a simple LLM request", async () => {
     try {
       const response = await invokeLLM({

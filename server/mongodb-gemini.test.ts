@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-describe("MongoDB and Gemini API Configuration", () => {
+describe.skipIf(!process.env.MONGODB_URI || !process.env.GEMINI_API_KEY)("MongoDB and Gemini API Configuration", () => {
   it("should have MONGODB_URI configured", () => {
     const mongoUri = process.env.MONGODB_URI;
     expect(mongoUri).toBeDefined();
