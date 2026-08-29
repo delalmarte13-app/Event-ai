@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
-import { defineConfig, type Plugin, type ViteDevServer } from "vite";
+import { defineConfig, loadEnv, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
 // =============================================================================
@@ -150,38 +150,95 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
+function escapeHtmlAttribute(value: string): string {
+  return value.replace(/[&<>\"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '\"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
+}
 
-export default defineConfig({
-  plugins,
-  resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+function vitePluginAnalytics(
+  endpoint: string | undefined,
+  websiteId: string | undefined,
+): Plugin {
+  const normalizedEndpoint = endpoint?.trim().replace(/\/+$/, "");
+  const normalizedWebsiteId = websiteId?.trim();
+  const isConfigured = Boolean(normalizedEndpoint && normalizedWebsiteId);
+
+  return {
+    name: "eventai-optional-analytics",
+    transformIndexHtml(html) {
+      if (!isConfigured) return html;
+
+      return {
+        html,
+        tags: [
+          {
+            tag: "script",
+            attrs: {
+              defer: true,
+              src: `${escapeHtmlAttribute(normalizedEndpoint!)}/umami`,
+              "data-website-id": escapeHtmlAttribute(normalizedWebsiteId!),
+            },
+            injectTo: "body",
+          },
+        ],
+      };
     },
-  },
-  envDir: path.resolve(import.meta.dirname),
-  root: path.resolve(import.meta.dirname, "client"),
-  publicDir: path.resolve(import.meta.dirname, "client", "public"),
-  build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
-    emptyOutDir: true,
-  },
-  server: {
-    host: true,
-    allowedHosts: [
-      ".manuspre.computer",
-      ".manus.computer",
-      ".manus-asia.computer",
-      ".manuscomputer.ai",
-      ".manusvm.computer",
-      "localhost",
-      "127.0.0.1",
-    ],
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
+  };
+}
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, import.meta.dirname, "");
+  const plugins = [
+    react(),
+    tailwindcss(),
+    jsxLocPlugin(),
+    vitePluginManusRuntime(),
+    vitePluginManusDebugCollector(),
+    vitePluginAnalytics(
+      env.VITE_ANALYTICS_ENDPOINT,
+      env.VITE_ANALYTICS_WEBSITE_ID,
+    ),
+  ];
+
+  return {
+    plugins,
+    resolve: {
+      alias: {
+        "@": path.resolve(import.meta.dirname, "client", "src"),
+        "@shared": path.resolve(import.meta.dirname, "shared"),
+        "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+      },
     },
-  },
+    envDir: path.resolve(import.meta.dirname),
+    root: path.resolve(import.meta.dirname, "client"),
+    publicDir: path.resolve(import.meta.dirname, "client", "public"),
+    build: {
+      outDir: path.resolve(import.meta.dirname, "dist/public"),
+      emptyOutDir: true,
+    },
+    server: {
+      host: true,
+      allowedHosts: [
+        ".manuspre.computer",
+        ".manus.computer",
+        ".manus-asia.computer",
+        ".manuscomputer.ai",
+        ".manusvm.computer",
+        "localhost",
+        "127.0.0.1",
+      ],
+      fs: {
+        strict: true,
+        deny: ["**/.*"],
+      },
+    },
+  };
 });

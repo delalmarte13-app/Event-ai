@@ -185,6 +185,7 @@ drizzle/
 - **Tests**: Escribe tests antes de features (vitest)
 - **Diseño**: Mantén paleta actual (azul 250 84% 54%, púrpura 280 85% 56%, dorado 38 92% 50%)
 - **Errores**: Revisa `.manus-logs/devserver.log` para debugging
+- **Configuración**: Analytics es opcional; define `VITE_ANALYTICS_ENDPOINT` y `VITE_ANALYTICS_WEBSITE_ID` solo si está intencionalmente habilitado.
 - **GitHub**: Haz push después de cada checkpoint importante
 
 ---

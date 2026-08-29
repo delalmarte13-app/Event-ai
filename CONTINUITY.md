@@ -1,94 +1,79 @@
 # Event-AI Continuity Record
 
-> This file is the authoritative short handoff for the next Manus session. Read it before inspecting the repository. Do not repeat an audit unless the source, dependencies, runtime, or requirements have changed.
+> Authoritative short handoff. Read this file first in the next session and do not repeat completed audits unless source, dependencies, runtime, or requirements changed.
 
 ## Repository
 
 - Canonical URL: `https://github.com/delalmarte13-app/Event-ai`
-- Working branch: `main`
+- Working branch: `manus/maintenance-2026-08-29`
 - Default branch: `main`
-- Starting commit: `dd0b3853`
-- Last verified pushed commit: `f99e297342c92c5c6cbc0934c99dd9e17fefe482`
-- Push status: `verified on GitHub`
-- Last session timestamp: `2026-08-28T21:49:00-06:00`
+- Starting commit: `9da054b3`
+- Final commit: `PENDING_COMMIT`
+- Last pushed commit: `PENDING_PUSH`
+- Push status: `PENDING_PUSH`
+- Session timestamp: `2026-08-29`
 
-## Verified application state
+## Verified project state
 
-Event-AI is a TypeScript full-stack application using React, Vite, Express, tRPC, Drizzle ORM, and MySQL/TiDB-oriented schema definitions. The repository contains event management, shared media, chat, AI-related flows, albums, communities, and professional features. The initial repository state had three TypeScript errors in the album router because the router referenced `albumItems.mediaId` while the current schema stores `albumItems.photoUrl`. The initial production build also failed because Tailwind 4 rejected `rounded-2xl` and subsequently `hover:shadow-xl` inside custom `@apply` rules. After the session changes, `pnpm check` and `pnpm build` pass. The default test suite passes its local tests while external integration suites are skipped when their required credentials are absent.
+Event-AI is a TypeScript React/Vite/Express/tRPC/Drizzle application. The pre-existing album-router and Tailwind fixes remain valid. The baseline was green: tests passed with external credential-dependent suites skipped, TypeScript passed, and production build passed with analytics placeholder warnings and a large JavaScript chunk warning.
 
-## Session delta
+## Completed in this session
 
-### Completed and verified
+- Removed the unconditional analytics script with unresolved `%VITE_*%` placeholders from `client/index.html`.
+- Added a small Vite plugin in `vite.config.ts` that injects the Umami script only when both `VITE_ANALYTICS_ENDPOINT` and `VITE_ANALYTICS_WEBSITE_ID` are explicitly configured. Values are trimmed, endpoint slashes normalized, and HTML attributes escaped.
+- Migrated pnpm `patchedDependencies` and `overrides` from the obsolete `package.json.pnpm` field into `pnpm-workspace.yaml`, removing the recurring pnpm configuration warning. `pnpm-lock.yaml` was refreshed.
 
-- Fixed `server/routers.ts` album reads to use the schema's permanent `photoUrl`, mapped as `url` for the existing frontend contract.
-- Fixed album generation inserts to persist `photoUrl` instead of the nonexistent `mediaId`.
-- Replaced Tailwind-incompatible `@apply` rules for `.glass-card` and `.card-hover` with compatible CSS declarations while preserving the visual intent.
-- Made Google Vision, MongoDB/Gemini, and OpenAI integration test suites conditional on their actual required environment variables. This prevents false failures in credential-free CI while preserving strict assertions when credentials are configured.
-- `pnpm test`: PASS — 6 passed, 8 skipped, 14 total.
-- `pnpm check`: PASS — TypeScript has no errors.
-- `pnpm build`: PASS — Vite and server bundle complete successfully.
-- `git diff --check`: PASS before continuity file creation.
+## Files changed and why
 
-### Completed but not fully verified
-
-- Browser end-to-end verification was not run in this sandbox session.
-- External Google Vision, MongoDB/Gemini, and built-in LLM calls were not executed because the required service credentials were unavailable. Their suites were skipped, not falsely marked as externally verified.
-
-### Not attempted / deferred
-
-- No schema migration was needed for the album fix because the existing schema already defines `albumItems.photoUrl`.
-- No Stripe, guest-flow, WebSocket, marketplace, or other large roadmap feature was started; these remain deferred until the current production flows and requirements are explicitly prioritized.
-- Analytics placeholders in `client/index.html` still produce build warnings when `VITE_ANALYTICS_ENDPOINT` and `VITE_ANALYTICS_WEBSITE_ID` are absent. The build succeeds, but this should be handled in a future focused task.
-- The build still reports a large JavaScript chunk warning. No speculative code-splitting refactor was started.
-- The pnpm configuration warning about the legacy `pnpm` field remains and should be addressed separately after confirming the deployment's supported pnpm configuration.
-
-## Files changed in the last session
-
-| File | Purpose of change | Validation |
+| File | Reason | Verification |
 |---|---|---|
-| `server/routers.ts` | Align album item reads/inserts with `photoUrl` schema field | `pnpm check`, `pnpm test`, `pnpm build` |
-| `client/src/index.css` | Replace Tailwind 4-incompatible custom `@apply` utilities | `pnpm build` |
-| `server/google-vision.test.ts` | Skip external suite when `GOOGLE_VISION_API_KEY` is unavailable | `pnpm test` |
-| `server/mongodb-gemini.test.ts` | Skip external suite when MongoDB/Gemini credentials are unavailable | `pnpm test` |
-| `server/openai.test.ts` | Use runtime-correct `BUILT_IN_FORGE_API_KEY` gating | `pnpm test` |
-| `CONTINUITY.md` | Preserve verified state and next-session instructions | Review before commit/push |
+| `client/index.html` | Remove invalid optional analytics placeholders | Production build; output inspection |
+| `vite.config.ts` | Conditional, escaped analytics injection | Type-check; unconfigured/configured builds |
+| `package.json` | Remove obsolete pnpm settings | pnpm scripts and install |
+| `pnpm-workspace.yaml` | Supported pnpm settings location | Online lockfile-only install |
+| `pnpm-lock.yaml` | Lock metadata aligned with workspace settings | Online lockfile-only install |
+| `CONTINUITY.md` | Preserve exact session state | Final review |
 
 ## Validation record
 
-| Command or check | Result | Notes |
+| Check | Result | Notes |
 |---|---|---|
-| `pnpm test` | PASS | 2 files passed; 3 external suites skipped; 6 passed and 8 skipped tests |
+| `pnpm test` | PASS | 6 passed, 8 skipped, 14 total; external suites skipped without credentials |
 | `pnpm check` | PASS | `tsc --noEmit` completed without errors |
-| `pnpm build` | PASS | Vite and esbuild completed; analytics/chunk-size warnings remain |
-| Browser/runtime flow | NOT RUN | No browser flow was executed in this session |
-| `git diff --check` | PASS | No whitespace errors before final documentation update |
+| `pnpm build` | PASS | Vite and esbuild completed; only large-chunk warning remains |
+| Configured analytics build | PASS | Temporary test values injected expected `/umami` script and website ID; no secrets used |
+| Unconfigured analytics output | PASS | No analytics placeholders/script emitted |
+| `pnpm install --lockfile-only` | PASS | Completed online with pnpm 10.4.1; peer/deprecation notices remain |
+| Prettier check | PASS | All touched files formatted |
+| `git diff --check` | PASS | No whitespace errors |
+| Browser/runtime flow | NOT RUN | No authenticated browser journey was available in this session |
 
-## Known failures and limitations
+## Known limitations and classification
 
-- External integration behavior is unverified in this environment because required credentials are unavailable. Classification: environment/credential-related.
-- Analytics placeholder warnings remain during build when analytics variables are absent. Classification: pre-existing/configuration-related.
-- Large JavaScript chunk warning remains. Classification: pre-existing/performance-related.
-- Legacy pnpm configuration warning remains. Classification: pre-existing/tooling-related.
+- Google Vision, MongoDB/Gemini, and built-in LLM integration behavior remains unverified because credentials are unavailable: environment/credential-related.
+- The production JavaScript bundle remains above 500 kB: pre-existing performance warning; code-splitting deferred to a separate focused task.
+- `pnpm install` reports existing peer/deprecation notices, including the JSX location plugin's Vite peer range and deprecated transitive packages: dependency-maintenance backlog, not introduced runtime failure.
+- No Stripe, guest sessions, WebSocket, marketplace, schema migration, or other large roadmap feature was started.
 
 ## Environment prerequisites
 
 - `DATABASE_URL`
-- `BUILT_IN_FORGE_API_KEY`
-- `BUILT_IN_FORGE_API_URL` when using a non-default built-in API endpoint
-- `GOOGLE_VISION_API_KEY` for Google Vision integration tests
-- `MONGODB_URI` and `GEMINI_API_KEY` for MongoDB/Gemini integration tests
-- `VITE_ANALYTICS_ENDPOINT` and `VITE_ANALYTICS_WEBSITE_ID` for analytics without build warnings
+- `BUILT_IN_FORGE_API_KEY` and optionally `BUILT_IN_FORGE_API_URL`
+- `GOOGLE_VISION_API_KEY`
+- `MONGODB_URI` and `GEMINI_API_KEY`
+- `VITE_ANALYTICS_ENDPOINT` and `VITE_ANALYTICS_WEBSITE_ID` only when analytics is intentionally enabled
+
+Never record secret values in this file.
 
 ## Next session instruction
 
-> Start by reading `CONTINUITY.md`, then run `git status --short` and inspect only the files named in the current task. Do not repeat the album-router or Tailwind audit; those issues are fixed and validated. The next highest-value task is to resolve the analytics configuration warning safely or perform browser verification of the event and album flows, depending on the product priority. Before implementing anything, verify only whether analytics is intentionally enabled in the deployment environment.
+> Read `CONTINUITY.md`, verify the pushed branch and commit, then run `git status --short` and perform browser verification of the event creation, invitation/join, gallery, and album flows if authenticated runtime access is available. Do not repeat the analytics or pnpm configuration audit. If browser verification is unavailable, address the large bundle warning only with measured, focused code-splitting work and regression tests.
 
 ## Release safety checklist
 
-- [x] All useful work is committed after final review.
-- [x] `git status --short` was reviewed before continuity creation.
-- [x] No secrets or credentials were added.
-- [x] Relevant tests/checks were run and recorded.
-- [x] The final commit SHA is recorded.
-- [x] The branch was pushed to GitHub and the push was verified.
-- [x] Any push failure is recorded exactly; none occurred.
+- [x] No secrets or credentials added.
+- [x] All useful code changes validated and documented.
+- [x] Generated node_modules cache changes removed.
+- [ ] Final commit SHA recorded.
+- [ ] Working branch pushed and verified on GitHub.
+- [ ] Push failure recorded exactly if publishing fails.
