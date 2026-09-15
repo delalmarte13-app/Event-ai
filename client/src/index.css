@@ -51,26 +51,28 @@
 
 @layer base {
   :root {
+    --font-sans: 'Inter', sans-serif;
+    --font-serif: 'Playfair Display', serif;
     --radius: 0.75rem;
-    --background: 250 40% 96%;
-    --foreground: 250 13% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 250 13% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 250 13% 11%;
-    --primary: 250 84% 54%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 280 85% 56%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 250 7% 60%;
-    --muted-foreground: 250 7% 60%;
-    --accent: 38 92% 50%;
-    --accent-foreground: 250 13% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 250 20% 88%;
-    --input: 250 20% 93%;
-    --ring: 250 84% 54%;
+    --background: hsl(250 40% 96%);
+    --foreground: hsl(250 13% 11%);
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(250 13% 11%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(250 13% 11%);
+    --primary: hsl(250 84% 54%);
+    --primary-foreground: hsl(0 0% 100%);
+    --secondary: hsl(280 85% 56%);
+    --secondary-foreground: hsl(0 0% 100%);
+    --muted: hsl(250 7% 60%);
+    --muted-foreground: hsl(250 7% 60%);
+    --accent: hsl(38 92% 50%);
+    --accent-foreground: hsl(250 13% 11%);
+    --destructive: hsl(0 84% 60%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --border: hsl(250 20% 88%);
+    --input: hsl(250 20% 93%);
+    --ring: hsl(250 84% 54%);
     --chart-1: 250 84% 54%;
     --chart-2: 0 84% 60%;
     --chart-3: 217 91% 60%;
@@ -87,25 +89,25 @@
   }
 
   .dark {
-    --background: 250 13% 11%;
-    --foreground: 250 40% 96%;
-    --card: 250 13% 18%;
-    --card-foreground: 250 40% 96%;
-    --popover: 250 13% 18%;
-    --popover-foreground: 250 40% 96%;
-    --primary: 250 84% 60%;
-    --primary-foreground: 250 13% 11%;
-    --secondary: 280 85% 60%;
-    --secondary-foreground: 250 13% 11%;
-    --muted: 250 7% 40%;
-    --muted-foreground: 250 7% 40%;
-    --accent: 38 92% 55%;
-    --accent-foreground: 250 13% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 250 13% 25%;
-    --input: 250 13% 22%;
-    --ring: 250 84% 60%;
+    --background: hsl(250 13% 11%);
+    --foreground: hsl(250 40% 96%);
+    --card: hsl(250 13% 18%);
+    --card-foreground: hsl(250 40% 96%);
+    --popover: hsl(250 13% 18%);
+    --popover-foreground: hsl(250 40% 96%);
+    --primary: hsl(250 84% 60%);
+    --primary-foreground: hsl(250 13% 11%);
+    --secondary: hsl(280 85% 60%);
+    --secondary-foreground: hsl(250 13% 11%);
+    --muted: hsl(250 7% 40%);
+    --muted-foreground: hsl(250 7% 40%);
+    --accent: hsl(38 92% 55%);
+    --accent-foreground: hsl(250 13% 11%);
+    --destructive: hsl(0 84% 60%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --border: hsl(250 13% 25%);
+    --input: hsl(250 13% 22%);
+    --ring: hsl(250 84% 60%);
     --chart-1: 250 84% 60%;
     --chart-2: 0 84% 60%;
     --chart-3: 217 91% 60%;
@@ -191,4 +193,9 @@
     box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     border-color: hsl(var(--primary) / 0.5);
   }
+}
+
+/* Runtime compatibility: keep the intended typeface even when Tailwind omits custom declarations inside @layer base. */
+body {
+  font-family: 'Inter', sans-serif;
 }

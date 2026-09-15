@@ -85,3 +85,20 @@
 - [x] Descarga de archivos no funciona - CORREGIDO: usando safeDownload sin removeChild
 - [x] 30+ errores TypeScript - CORREGIDO: batch fixes en routers, páginas, componentes
 - [x] Tests fallando - CORREGIDO: simplificado eventai.test.ts
+
+
+## Fase 11: Depuración autónoma y primeras pruebas
+
+### Protocolo de ahorro de tokens
+
+Leer `CONTINUITY.md` primero. Inspeccionar únicamente los archivos necesarios para el fallo activo. Agrupar comandos relacionados, reutilizar hallazgos verificados, evitar volcados completos del repositorio y registrar evidencia después de cada hito.
+
+### Cola de ejecución
+
+- [x] Confirmar rama, estado limpio, HEAD, remoto y alineación con GitHub.
+- [x] Construir un mapa compacto de arquitectura desde scripts, rutas, esquema, variables y entradas de pruebas.
+- [x] Ejecutar check, build, tests y comprobaciones runtime focalizadas como línea base.
+- [x] Clasificar fallos y corregir únicamente bloqueos reproducibles.
+- [x] Añadir regresiones focalizadas para cada corrección.
+- [x] Validar los primeros flujos de prueba y documentar bloqueos dependientes de credenciales.
+- [ ] Actualizar `CONTINUITY.md`, revisar diff/status, crear commit y hacer push a GitHub.

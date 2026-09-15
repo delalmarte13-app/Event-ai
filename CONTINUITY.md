@@ -92,3 +92,39 @@ Event-AI is a TypeScript full-stack application using React, Vite, Express, tRPC
 - [x] The final commit SHA is recorded.
 - [x] The branch was pushed to GitHub and the push was verified.
 - [x] Any push failure is recorded exactly; none occurred.
+
+
+## Session update — 2026-09-15T23:13:11+00:00
+
+### Completed and verified
+
+- Recovered a clean clone from the canonical GitHub repository at commit `9da054b` before making changes.
+- Ran `pnpm check`, `pnpm build`, and `pnpm test` as a fresh baseline: TypeScript passed, production build passed, and the suite reported 8 passed with 6 credential-dependent tests skipped.
+- Started the development server successfully on an available port and received HTTP 200 from the root route.
+- Verified public navigation to `/events` and `/communities` in the browser without authentication; both routes rendered and the browser console showed no application exception.
+- Reproduced and fixed the visual theme issue: HSL tokens were stored as raw triplets while Tailwind 4 emitted them as complete color values. The semantic background, foreground, card, border, primary, secondary, muted, accent, destructive, input, and ring tokens now use valid `hsl(...)` values.
+- Added an explicit runtime-safe `body` font rule so the intended Inter typeface is applied even when custom declarations inside `@layer base` are omitted by the CSS pipeline.
+- Confirmed in the browser after reload that computed background, foreground, and font values are active: dark theme background, light foreground, and `Inter, sans-serif`.
+
+### Validation record for this session
+
+| Command or check | Result | Notes |
+|---|---|---|
+| `pnpm check` | PASS | No TypeScript errors. |
+| `pnpm build` | PASS | Vite and esbuild completed; existing pnpm/chunk warnings remain. |
+| `pnpm test` | PASS | 3 files passed, 2 skipped; 8 passed, 6 skipped. |
+| Runtime startup | PASS | Development server started on an available port and served HTTP 200. |
+| Browser `/events` | PASS | Public route rendered without login. |
+| Browser `/communities` | PASS | Public route rendered without login. |
+| Browser console | PASS | No application exception observed after navigation. |
+| CSS computed styles | PASS | Background, foreground, and Inter font confirmed in runtime. |
+
+### Current limitations
+
+- Credential-dependent Google Vision, MongoDB/Gemini, and built-in LLM calls remain intentionally unexecuted.
+- Authenticated event creation, media upload, chat, album generation, camera capture, and video generation still require a logged-in browser session and configured services for end-to-end verification.
+- Existing pnpm legacy-field and large-bundle warnings remain; neither blocks startup, check, build, or public navigation.
+
+### Next session instruction
+
+> Read `CONTINUITY.md` first. Do not repeat the album-router, Tailwind `@apply`, or semantic-token audit. Start with the authenticated first-test flow when credentials are available: sign in, create or open an event, inspect gallery upload, verify chat, and inspect album generation. If credentials are unavailable, continue only with focused public-route and component tests; do not fabricate data or external secrets.
