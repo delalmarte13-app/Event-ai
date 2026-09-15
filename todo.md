@@ -101,4 +101,4 @@ Leer `CONTINUITY.md` primero. Inspeccionar únicamente los archivos necesarios p
 - [x] Clasificar fallos y corregir únicamente bloqueos reproducibles.
 - [x] Añadir regresiones focalizadas para cada corrección.
 - [x] Validar los primeros flujos de prueba y documentar bloqueos dependientes de credenciales.
-- [ ] Actualizar `CONTINUITY.md`, revisar diff/status, crear commit y hacer push a GitHub.
+- [x] Actualizar `CONTINUITY.md`, revisar diff/status, crear commit y hacer push a GitHub. El commit funcional `4bbca291` está publicado en `origin/main`; la actualización documental se publicará como cambio separado.

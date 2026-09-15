@@ -8,9 +8,9 @@
 - Working branch: `main`
 - Default branch: `main`
 - Starting commit: `dd0b3853`
-- Last verified pushed commit: `f99e297342c92c5c6cbc0934c99dd9e17fefe482`
+- Last verified pushed commit: `4bbca291490c260ec473187b8485b5a84b6bd350`
 - Push status: `verified on GitHub`
-- Last session timestamp: `2026-08-28T21:49:00-06:00`
+- Last session timestamp: `2026-09-15T23:13:11+00:00`
 
 ## Verified application state
 
@@ -92,6 +92,10 @@ Event-AI is a TypeScript full-stack application using React, Vite, Express, tRPC
 - [x] The final commit SHA is recorded.
 - [x] The branch was pushed to GitHub and the push was verified.
 - [x] Any push failure is recorded exactly; none occurred.
+
+## Publication note
+
+The functional CSS/debug commit `4bbca291490c260ec473187b8485b5a84b6bd350` was pushed to `origin/main`. Any later commit that only updates this handoff remains documentation-only and must not be treated as an unverified application change.
 
 
 ## Session update — 2026-09-15T23:13:11+00:00
