@@ -132,3 +132,39 @@ The functional CSS/debug commit `4bbca291490c260ec473187b8485b5a84b6bd350` was p
 ### Next session instruction
 
 > Read `CONTINUITY.md` first. Do not repeat the album-router, Tailwind `@apply`, or semantic-token audit. Start with the authenticated first-test flow when credentials are available: sign in, create or open an event, inspect gallery upload, verify chat, and inspect album generation. If credentials are unavailable, continue only with focused public-route and component tests; do not fabricate data or external secrets.
+
+## Session update — 2026-09-16 (Claude Code session, live-test deployment)
+
+### Goal
+
+Get a working, publicly reachable deployment for a real multi-person first test (event creation, invite, gallery upload, AI album generation) the same night, plus a free/non-Manus LLM provider so AI features work outside the Manus platform.
+
+### Completed and verified
+
+- Fresh clone at `a5180707`, `pnpm install`, `pnpm check`, `pnpm build`, `pnpm test` all reproduced the state already recorded above (6 passed, 8 skipped) — audit not repeated beyond this baseline confirmation.
+- `server/_core/llm.ts`: `invokeLLM` now resolves a provider — a direct, free-tier `GEMINI_API_KEY` (from https://aistudio.google.com/apikey, calling `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`) takes priority over `BUILT_IN_FORGE_API_KEY` (Manus forge proxy). The Manus-only `thinking` payload field is only sent to the forge provider. `server/_core/env.ts` gained `geminiApiKey`, `geminiModel`, `devLoginEnabled`.
+- Added `server/llm-provider.test.ts` (3 tests, mocked `fetch`) covering: Gemini branch selected + correct URL/model/no `thinking` field, forge fallback branch, and the "no provider configured" error. `pnpm test` now reports 9 passed, 8 skipped.
+- Added `server/_core/devLogin.ts`: a sign-in route mounted only when the `DEV_LOGIN_ENABLED` env flag is explicitly set. It signs a real session JWT with the app's existing session secret and upserts the user directly into the DB, bypassing the real Manus OAuth round-trip (`OAUTH_SERVER_URL`/`VITE_APP_ID`), which is not reachable outside Manus infrastructure. This route requires no credentials, so the flag must stay off except during an explicitly supervised test window — disable it immediately after use (see "Next session" below). Operational specifics (deployment URL, generated secrets) intentionally live outside this public repo.
+- Committed as `3f28309d` on `main`, pushed to `origin/main`.
+- Provisioned a hosting project with a MySQL database (persistent volume) and an app service built from `delalmarte13-app/event-ai@main`. Session secret and database credentials were generated and stored only in the hosting platform's env vars, not in this repo. A pre-deploy step runs schema migrations before each deploy.
+- A public HTTPS domain was generated for the app service and the first two deploys both reported success, with the container logs confirming the server started and the dev sign-in route was mounted.
+
+### Completed but not fully verified
+
+- Whether the pre-deploy migration step actually ran is unconfirmed: no migrate-related log lines appeared for the redeploy-triggered deployment (it may reuse the prior build and skip pre-deploy). A push-triggered deploy (this commit) should exercise the full pipeline including pre-deploy; check its logs for migrate output and confirm the album/media/event tables exist before relying on it.
+- Sandbox egress to arbitrary public hosts is blocked by this environment's outbound proxy policy, so the live app could not be curled from here to confirm HTTP 200 end-to-end. Verification of the live app must happen from the user's own browser/phone, or via the hosting platform's own log/status tooling from a future session.
+- No `GEMINI_API_KEY` was available in this session; it was requested from the user but not yet set on the hosting platform as of this write-up. Without it, album generation falls back to a static summary string (`invokeLLM` throws, caught in `server/routers.ts` `albums.generate`) rather than a real AI-written description, and other AI-copy features (video narrative) will also fail until either `GEMINI_API_KEY` or `BUILT_IN_FORGE_API_KEY` is set.
+- No end-to-end browser verification (sign in → create event → invite a second person → upload photos → generate album) was performed in this session; it requires human devices.
+
+### Not attempted / deferred
+
+- `server/_core/imageGeneration.ts` (Manus-only "edit photo with AI" feature, uses Manus's internal `ImageService` protocol) was left untouched — it has no free/direct-Gemini equivalent wired up and is not required for the album-generation flow the user asked to test. It will keep failing without `BUILT_IN_FORGE_API_KEY`.
+- No guest/no-account join flow exists yet (tracked as future work in `NEXT_STEPS.md`); every tester must go through `/dev-login` (or real Manus OAuth, unavailable here) before joining an event by invite code.
+- Analytics build warnings, JS chunk-size warning, and the legacy pnpm-field warning are unchanged from the prior session and still out of scope.
+
+### Next session / immediate next steps
+
+1. Set `GEMINI_API_KEY` on the hosting platform once the user supplies it, then redeploy.
+2. Confirm the migration step actually ran on the latest push-triggered deploy (check logs for migrate output, or confirm no "table doesn't exist" errors surface when creating an event).
+3. Have the user sign in via the dev sign-in route with a name, create an event, share the invite code with 1-2 other people (each also signs in the same way), upload photos, and generate an album from the event page. Report back any runtime error text verbatim rather than re-diagnosing blind.
+4. Once the live test is done, disable `DEV_LOGIN_ENABLED` on the hosting platform to close the auth bypass.
