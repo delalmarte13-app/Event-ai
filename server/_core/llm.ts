@@ -209,14 +209,41 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
+type Provider = {
+  name: "gemini" | "forge";
+  apiUrl: string;
+  apiKey: string;
+  model: string;
+};
 
-const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+// Prefers a direct, free-tier Gemini API key (from https://aistudio.google.com/apikey)
+// over Manus's built-in forge proxy, so the app also works outside the Manus platform.
+const resolveProvider = (): Provider => {
+  if (ENV.geminiApiKey) {
+    return {
+      name: "gemini",
+      apiUrl: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      apiKey: ENV.geminiApiKey,
+      model: ENV.geminiModel,
+    };
+  }
+
+  return {
+    name: "forge",
+    apiUrl:
+      ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
+        ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
+        : "https://forge.manus.im/v1/chat/completions",
+    apiKey: ENV.forgeApiKey,
+    model: "gemini-2.5-flash",
+  };
+};
+
+const assertApiKey = (provider: Provider) => {
+  if (!provider.apiKey) {
+    throw new Error(
+      "No LLM provider configured: set GEMINI_API_KEY (free, from https://aistudio.google.com/apikey) or BUILT_IN_FORGE_API_KEY"
+    );
   }
 };
 
@@ -266,7 +293,8 @@ const normalizeResponseFormat = ({
 };
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  assertApiKey();
+  const provider = resolveProvider();
+  assertApiKey(provider);
 
   const {
     messages,
@@ -280,7 +308,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   } = params;
 
   const payload: Record<string, unknown> = {
-    model: "gemini-2.5-flash",
+    model: provider.model,
     messages: messages.map(normalizeMessage),
   };
 
@@ -296,9 +324,14 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.tool_choice = normalizedToolChoice;
   }
 
-  payload.max_tokens = 32768
-  payload.thinking = {
-    "budget_tokens": 128
+  payload.max_tokens = 32768;
+
+  // "thinking" is a Manus forge-only extension; the real Gemini OpenAI-compat
+  // endpoint rejects unknown fields.
+  if (provider.name === "forge") {
+    payload.thinking = {
+      budget_tokens: 128,
+    };
   }
 
   const normalizedResponseFormat = normalizeResponseFormat({
@@ -312,11 +345,11 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const response = await fetch(resolveApiUrl(), {
+  const response = await fetch(provider.apiUrl, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      authorization: `Bearer ${provider.apiKey}`,
     },
     body: JSON.stringify(payload),
   });
