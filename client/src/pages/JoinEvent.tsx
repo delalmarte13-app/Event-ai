@@ -12,7 +12,10 @@ import { useLocation, Link } from "wouter";
 export default function JoinEvent() {
   const { isAuthenticated, loading } = useAuth();
   const [, navigate] = useLocation();
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(() => {
+    const codeFromUrl = new URLSearchParams(window.location.search).get("code");
+    return codeFromUrl ? codeFromUrl.toUpperCase() : "";
+  });
 
   const joinEvent = trpc.events.joinByCode.useMutation({
     onSuccess: (data) => {
