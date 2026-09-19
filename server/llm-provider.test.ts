@@ -35,7 +35,7 @@ describe("invokeLLM provider selection", () => {
     expect(url).toBe("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions");
     expect(options.headers.authorization).toBe("Bearer test-gemini-key");
     const body = JSON.parse(options.body);
-    expect(body.model).toBe("gemini-2.5-flash");
+    expect(body.model).toBe("gemini-3.6-flash");
     expect(body.thinking).toBeUndefined();
   });
 
