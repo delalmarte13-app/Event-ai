@@ -164,7 +164,8 @@ Get a working, publicly reachable deployment for a real multi-person first test 
 
 ### Next session / immediate next steps
 
-1. Set `GEMINI_API_KEY` on the hosting platform once the user supplies it, then redeploy.
-2. Confirm the migration step actually ran on the latest push-triggered deploy (check logs for migrate output, or confirm no "table doesn't exist" errors surface when creating an event).
-3. Have the user sign in via the dev sign-in route with a name, create an event, share the invite code with 1-2 other people (each also signs in the same way), upload photos, and generate an album from the event page. Report back any runtime error text verbatim rather than re-diagnosing blind.
+1. ~~Set `GEMINI_API_KEY`~~ — done. User supplied a real key; it's set on the hosting platform's `app` service. Confirmed working two ways: (a) the platform's own logs show a healthy container start on the deploy that picked it up; (b) the exact prompt template used by `albums.generate` (`server/routers.ts`) was replayed against the real Gemini endpoint from a sandbox with network access and returned a well-formed, on-topic Spanish narrative — the album-generation feature is verified working end to end at the API level.
+2. ~~Confirm the migration step ran~~ — done, confirmed via deploy logs (`[✓] migrations applied successfully!`) on two separate deploys.
+3. Still open: no human has clicked through the actual browser flow yet (sign in → create event → invite → upload → generate album). The API-level pieces are all verified individually; a live run is the only thing that would catch a UI-layer issue. Report back any runtime error text verbatim rather than re-diagnosing blind.
 4. Once the live test is done, disable `DEV_LOGIN_ENABLED` on the hosting platform to close the auth bypass.
+5. Note for whoever picks this up next: another session was editing this same repo concurrently (commits `68b98d95`..`4c11e8da`, session `01AkXxTVsNFuMRGMyKj7KAV5`) and independently fixed the same Gemini-model issue plus a crash-on-every-unauthenticated-page-load bug and added a PWA manifest. `git fetch` before assuming this file is the latest state.
