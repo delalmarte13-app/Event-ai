@@ -53,7 +53,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg">
               <Sparkles className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="text-xl font-serif font-semibold text-gold-gradient hidden sm:block">
+            <span className="text-xl font-semibold text-foreground hidden sm:block">
               EventAI
             </span>
           </Link>
@@ -183,40 +183,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-border/50 bg-card/50 mt-auto">
-        <div className="container py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-                  <Sparkles className="w-3.5 h-3.5 text-primary-foreground" />
-                </div>
-                <span className="text-lg font-serif font-semibold text-gold-gradient">EventAI</span>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                La plataforma inteligente para crear, compartir y recordar tus momentos más especiales.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold mb-3 text-foreground">Plataforma</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/events" className="hover:text-primary transition-colors">Eventos</Link></li>
-                <li><Link href="/communities" className="hover:text-primary transition-colors">Comunidades</Link></li>
-                <li><Link href="/professionals" className="hover:text-primary transition-colors">Profesionales</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold mb-3 text-foreground">Cuenta</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link></li>
-                <li><Link href="/profile" className="hover:text-primary transition-colors">Mi Perfil</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p className="text-xs text-muted-foreground">© 2026 EventAI. Todos los derechos reservados.</p>
-            <p className="text-xs text-muted-foreground">Creado con IA para momentos únicos</p>
-          </div>
+      <footer className="border-t border-border/50 mt-auto">
+        <div className="container py-6 flex items-center justify-center">
+          <p className="text-xs text-muted-foreground">© 2026 EventAI</p>
         </div>
       </footer>
     </div>
